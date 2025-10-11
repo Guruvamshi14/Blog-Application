@@ -147,37 +147,33 @@
     </div>
 
 
+    <form id="commentForm">
+        <h3>Add Comment</h3>
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="email" id="email" placeholder="Your Email" required>
+        <textarea id="comment" placeholder="Write a comment..." required></textarea>
+        <button type="button" onclick="submitComment()">Add Comment</button>
+    </form>
 
 
-    <!-- Comments Section -->
-<!--    <div class="comments">-->
-<!--        <h3>Comments</h3>-->
-<!--        <div th:each="comment : ${post.comments}" class="comment">-->
-<!--            <div class="name" th:text="${comment.name}">Commenter Name</div>-->
-<!--            <div class="email" th:text="${comment.email}">email@example.com</div>-->
-<!--            <div class="text" th:text="${comment.comment}">Comment text goes here...</div>-->
-<!--            <div class="date" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}">10 Oct 2025 11:00</div>-->
-<!--        </div>-->
-<!--    </div>-->
+    <div class="comments" id="commentsSection" style="display:none;">
+        <h3>Comments</h3>
+        <div th:each="comment : ${post.comments}" class="comment">
+            <div class="name" th:text="${comment.name}"></div>
+            <div class="email" th:text="${comment.email}"></div>
+            <div class="text" th:text="${comment.comment}"></div>
+            <div class="date" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}"></div>
+        </div>
+    </div>
 
-    <!-- Comment Form -->
-<!--    <div class="comment-form">-->
-<!--        <h3>Add a Comment</h3>-->
-<!--        <form th:action="@{/posts/{id}/comments(id=${post.id})}" method="post">-->
-<!--            <label for="name">Name:</label>-->
-<!--            <input type="text" id="name" name="name" required>-->
+    <button type="button" onclick="document.getElementById('commentsSection').style.display='block'">
+        Show Comments
+    </button>
 
-<!--            <label for="email">Email:</label>-->
-<!--            <input type="email" id="email" name="email" required>-->
 
-<!--            <label for="comment">Comment:</label>-->
-<!--            <textarea id="comment" name="comment" required></textarea>-->
-
-<!--            <button type="submit">Submit</button>-->
-<!--        </form>-->
-<!--    </div>-->
-
-    <a href="/" class="back-link">← Back to All Posts</a>
+    <div>
+        <a href="/" class="back-link">← Back to All Posts</a>
+    </div>
 </div>
 
 
@@ -193,6 +189,29 @@
                 }
             });
     });
+
+    function submitComment() {
+        const postId = [[${post.id}]];
+        const data = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            comment: document.getElementById('comment').value
+        };
+        const url = '/post' + postId + '/comments';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(response => {
+                if(response.ok){
+                    window.location.href = "/";
+                } else {
+                    alert("Error deleting post!");
+                }
+            });
+    }
 </script>
 
 </body>

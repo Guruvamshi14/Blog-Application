@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,7 +16,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "tags")
+@ToString(exclude = {"comments", "tags"})
 public class Post {
 
     @Id
@@ -45,6 +46,9 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     private LocalDateTime createdAt;
 
@@ -78,12 +82,5 @@ public class Post {
         tag.getPosts().remove(this);
     }
 
-    public void updateFrom(Post other) {
-        this.title = other.title;
-        this.author = other.author;
-        this.content = other.content;
-        this.excerpt = other.excerpt;
-        this.publishedAt = other.publishedAt;
-    }
 
 }
