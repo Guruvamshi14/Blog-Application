@@ -34,7 +34,6 @@ public class Post {
     @Column(nullable = false)
     private String author;
 
-    @Column(nullable = true)
     private LocalDateTime publishedAt;
 
     private Boolean isPublished;

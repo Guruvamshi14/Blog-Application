@@ -23,7 +23,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
 
-    public void savePost(Post post, List<String> tagList) {
+    public Post savePost(Post post, List<String> tagList) {
         Set<Tag> tags = new HashSet<>();
         for (String tagName : tagList) {
             Tag tag = tagRepository.findByName(tagName)
@@ -31,7 +31,7 @@ public class PostService {
             tags.add(tag);
         }
         post.setTags(tags);
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     public List<Post> getAllPosts() {

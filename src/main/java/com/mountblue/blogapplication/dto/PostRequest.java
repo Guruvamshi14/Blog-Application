@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -23,21 +20,30 @@ public class PostRequest {
     private String author;
     private String excerpt;
     private String tags;
-    private LocalDateTime publishedAt;
+    private Long id;
 
+    public PostRequest(Post post) {
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.author = post.getAuthor();
+        this.excerpt = post.getExcerpt();
+        this.tags = convertTagsToString(post.getTags());
+        this.id = post.getId();
+    }
 
-    // Try to Add the Manual Bean
-    public Post getPost() {
+    public  Post getPost() {
         Post post = new Post();
         post.setTitle(title);
         post.setContent(content);
         post.setAuthor(author);
         post.setExcerpt(excerpt);
-        post.setPublishedAt(publishedAt);
         return post;
     }
 
     public List<String> getTagList() {
+        if (tags == null || tags.isEmpty()) {
+            return Collections.emptyList();
+        }
         return Arrays.stream(tags.split(","))
                                     .map(String::trim)
                                     .filter(tag -> !tag.isEmpty())
@@ -45,7 +51,7 @@ public class PostRequest {
                                     .toList();
     }
 
-    public static String convertTagsToString(Set<Tag> tagsSet) {
+    public String convertTagsToString(Set<Tag> tagsSet) {
         if (tagsSet == null || tagsSet.isEmpty()) {
             return "";
         }

@@ -3,10 +3,7 @@ package com.mountblue.blogapplication.controller;
 import com.mountblue.blogapplication.dto.PostRequest;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.service.PostService;
-import com.mountblue.blogapplication.service.TagService;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.apache.bcel.generic.ClassGen;
-import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,58 +31,59 @@ public class PostController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", posts.getTotalPages());
 
-        return "viewallpost";
+        return "view_all_post";
     }
 
     @GetMapping("/newpost")
-    public String showPostForm() {
-        log.debug("I am in the post Form");
-        return "new-post";
+    public String showPostForm(Model model) {
+        model.addAttribute("postRequest", new PostRequest());
+        return "create_post";
     }
 
     @PostMapping("/newpost")
-    public String savePost(@RequestBody PostRequest postRequest, Model model) {
-        log.debug("{}", postRequest);
+    public String savePost(@ModelAttribute PostRequest postRequest) {
         List<String> tagList = postRequest.getTagList();
         Post post = postRequest.getPost();
-        postService.savePost(post, tagList);
-        model.addAttribute("post", post);
-        return VIEW_POST;
+
+        log.debug("{}", postRequest);
+        log.debug("{}", post);
+        log.debug("{}", tagList);
+
+        Post savedPost = postService.savePost(post, tagList);
+        return "redirect:/post/" + savedPost.getId();
     }
 
-    @GetMapping("/post{id}")
+    @GetMapping("/post/{id}")
     public String getPostById(@PathVariable("id") Long id, Model model) {
         log.debug("{}", id);
         Post post = postService.getPostById(id);
         log.debug("{}", post);
         model.addAttribute("post", post);
-        return VIEW_POST;
+        return "view_post";
     }
 
-    @GetMapping("/editpost{id}")
+    @GetMapping("/post/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
-        String tagNames = PostRequest.convertTagsToString(post.getTags());
-        model.addAttribute("post", post);
-        model.addAttribute("tagNames", tagNames);
-        return "updatePost";
+        PostRequest postRequest = new PostRequest(post);
+        model.addAttribute("postRequest", postRequest);
+        return "update_post";
     }
 
-    @PutMapping("/post{id}")
-    public String updatePost(@RequestBody PostRequest postRequest, @PathVariable("id") Long id, Model model) {
-        log.debug("In the Update Post");
-        Post updatedPost = postRequest.getPost();
-        Post post = postService.updatePostById(id, updatedPost);
+    @PutMapping("/post/{id}")
+    public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
+        Post post = postRequest.getPost();
         log.debug("{}", post);
-        model.addAttribute("post", post);
-        return VIEW_POST;
+        Post updatedPost = postService.updatePostById(id, post);
+        log.debug("{}", updatedPost);
+        return "redirect:/post/" + updatedPost.getId();
     }
 
-    @DeleteMapping("/post{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    @DeleteMapping("/post/{id}")
+    public String deletePost(@PathVariable Long id) {
         log.debug("{}", id);
         postService.deletePost(id);
-        return ResponseEntity.ok().build(); // send 200 OK
+        return "redirect:/";
     }
 }
 

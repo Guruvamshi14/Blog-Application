@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create New Post</title>
+    <style>
+        body {
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 40px;
+        }
+<!--        form {-->
+<!--            background: white;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 12px;-->
+<!--            width: 400px;-->
+<!--            box-shadow: 0 2px 8px rgba(0,0,0,0.2);-->
+<!--        }-->
+        label {
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        button {
+            background-color: black;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+<h1>Create a New Post</h1>
+
+<form th:action="@{/newpost}" th:object="${postRequest}" method="post">
+    <label>Title:</label>
+    <input type="text" th:field="*{title}" required />
+
+    <label>Excerpt:</label>
+    <input type="text" th:field="*{excerpt}" required />
+
+    <label>Content:</label>
+    <textarea th:field="*{content}" rows="5" required></textarea>
+
+    <label>Author:</label>
+    <input type="text" th:field="*{author}" required />
+
+    <label>Tags (comma separated):</label>
+    <input type="text" th:field="*{tags}" placeholder="e.g. Java, Spring, Hibernate" />
+
+    <button type="submit">Create Post</button>
+</form>
+
+
+<a href="/" style="color: black; text-decoration: underline;">← Back to Home</a>
+</body>
+</html>

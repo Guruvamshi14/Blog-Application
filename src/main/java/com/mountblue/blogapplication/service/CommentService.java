@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Slf4j
 @Service
 public class CommentService {
@@ -27,5 +29,34 @@ public class CommentService {
         post.getComments().add(comment);
         log.debug("{}", post);
         postRepository.save(post);
+    }
+
+    public Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
+    }
+
+    public Comment updateComment(Comment comment) {
+        Comment existingComment = commentRepository.findById(comment.getId())
+                .orElseThrow(() -> new RuntimeException(
+                        "Comment not found with id: " + comment.getId()
+                ));
+
+        existingComment.setName(comment.getName());
+        existingComment.setEmail(comment.getEmail());
+        existingComment.setComment(comment.getComment());
+
+        if (comment.getPost() != null) {
+            existingComment.setPost(comment.getPost());
+        }
+
+        return commentRepository.save(existingComment);
+    }
+
+    public Comment deleteComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Comment not found with id: " + commentId
+                ));
     }
 }

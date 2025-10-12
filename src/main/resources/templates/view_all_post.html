@@ -111,7 +111,7 @@
                 <span class="post-author" th:text="${post.author}">Author Name</span>
             </div>
         </div>
-        <a th:href="@{/post{id}(id=${post.id})}">
+        <a th:href="@{/post/{id}(id=${post.id})}">
             <button>View Post</button>
         </a>
     </div>

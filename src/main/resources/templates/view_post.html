@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${post.title}">View Post</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
+            margin: 0;
+            padding: 30px;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 1.6em;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .author, .published, .excerpt, .content, .tags {
+            margin-bottom: 10px;
+        }
+
+        .author span, .published span, .excerpt, .content {
+            font-size: 1em;
+            color: #333;
+        }
+
+        .tags span {
+            display: inline-block;
+            border: 1px solid #000;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin: 3px 3px 0 0;
+            font-size: 0.95em;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            border: 1px solid #000;
+            padding: 8px;
+            margin: 6px 0;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        form.inline-form {
+            display: inline;
+        }
+
+        .comment {
+            border-bottom: 1px solid #000;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        .comment .name {
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .comment .email {
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .comment .text {
+            margin-top: 5px;
+            font-size: 1em;
+        }
+
+        .comment .date {
+            font-size: 0.85em;
+            color: #777;
+        }
+
+        a.back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #000;
+            text-decoration: underline;
+            font-size: 1em;
+        }
+
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .actions button {
+            font-size: 0.95em;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 th:text="${post.title}">Post Title</h1>
+
+    <div class="author">
+        <span class="label">Author:</span>
+        <span th:text="${post.author}">Author Name</span>
+    </div>
+
+
+    <div class="excerpt">
+        <span class="label">Excerpt:</span>
+        <span th:text="${post.excerpt}">Post excerpt...</span>
+    </div>
+
+    <div class="content">
+        <span class="label">Content:</span>
+        <span th:text="${post.content}">Post content...</span>
+    </div>
+
+    <div class="tags">
+        <span class="label">Tags:</span>
+        <span th:each="tag : ${post.tags}" th:text="${tag.name}">SampleTag</span>
+    </div>
+
+    <div class="published">
+        <span class="label">Created At:</span>
+        <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy HH:mm')}">10 Oct 2025 10:00</span>
+    </div>
+
+    <div class="published">
+        <span class="label">Updated At:</span>
+        <span th:text="${#temporals.format(post.updatedAt, 'dd MMM yyyy HH:mm')}">10 Oct 2025 10:00</span>
+    </div>
+
+
+    <!-- EDIT / DELETE POST -->
+    <div class="actions">
+        <a th:href="@{/post/{id}/edit(id=${post.id})}"
+           style="display:inline-block; padding:8px 12px; background:black; color:white; text-decoration:none; border-radius:6px;">
+            Edit Post
+        </a>
+
+        <form th:action="@{/post/{id}(id=${post.id})}" method="post" class="inline-form">
+            <input type="hidden" name="_method" value="delete"/>
+            <button type="submit" style="background-color:red;">Delete Post</button>
+        </form>
+    </div>
+
+    <!-- ADD COMMENT -->
+<!--    <h2>Add Comment</h2>-->
+<!--    <form th:action="@{/post/{postId}/comments(postId=${post.id})}" method="post" th:object="${comment}">-->
+<!--        <label class="label" for="name">Name:</label>-->
+<!--        <input type="text" th:field="*{name}" id="name" required/>-->
+
+<!--        <label class="label" for="email">Email:</label>-->
+<!--        <input type="email" th:field="*{email}" id="email" required/>-->
+
+<!--        <label class="label" for="comment">Comment:</label>-->
+<!--        <textarea th:field="*{comment}" id="comment" required></textarea>-->
+
+<!--        <button type="submit">Add Comment</button>-->
+<!--    </form>-->
+
+<!--    &lt;!&ndash; COMMENTS LIST &ndash;&gt;-->
+<!--    <h2>Comments</h2>-->
+<!--    <div th:each="comment : ${post.comments}" class="comment">-->
+<!--        <div class="name" th:text="${comment.name}"></div>-->
+<!--        <div class="email" th:text="${comment.email}"></div>-->
+<!--        <div class="text" th:text="${comment.comment}"></div>-->
+<!--        <div class="date" th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}"></div>-->
+
+<!--        <div style="margin-top:10px; display:flex; gap:10px;">-->
+<!--            <a th:href="@{/update/comment{commentId}(commentId=${comment.id})}" style="color: #000; text-decoration: underline;">Edit</a>-->
+
+<!--            <form th:action="@{/post/comment/delete/{commentId}(commentId=${comment.id})}" method="post" class="inline-form">-->
+<!--                <input type="hidden" name="_method" value="delete"/>-->
+<!--                <button type="submit" style="background-color:red;">Delete</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div>
+        <a href="/" class="back-link">← Back to All Posts</a>
+    </div>
+
+</div>
+
+</body>
+</html>
+
