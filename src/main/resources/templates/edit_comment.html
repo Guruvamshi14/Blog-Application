@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Comment</title>
+</head>
+<body>
+<h2>Edit Comment</h2>
+
+<form th:action="@{/comment/{id}(id=${comment.id})}" method="post">
+    <!-- Hidden field to simulate PUT -->
+    <input type="hidden" name="_method" value="put"/>
+
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" th:value="${comment.name}" required />
+    </div>
+
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" th:value="${comment.email}" required />
+    </div>
+
+    <div>
+        <label for="commentText">Comment:</label>
+        <textarea id="commentText" name="commentText" required th:text="${comment.comment}"></textarea>
+    </div>
+
+    <button type="submit">Update Comment</button>
+</form>
+
+
+
+<a th:href="@{/post/{id}(id=${comment.post.id})}">← Back to Post</a>
+</body>
+</html>

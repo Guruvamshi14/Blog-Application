@@ -1,6 +1,7 @@
 package com.mountblue.blogapplication.controller;
 
 import com.mountblue.blogapplication.dto.PostRequest;
+import com.mountblue.blogapplication.model.Comment;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.service.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import java.util.List;
 //@ResponseBody
 public class PostController {
     private final PostService postService;
-    private static final String VIEW_POST = "viewPost";
     public PostController(PostService postService) {
         this.postService = postService;
     }
@@ -55,9 +55,7 @@ public class PostController {
 
     @GetMapping("/post/{id}")
     public String getPostById(@PathVariable("id") Long id, Model model) {
-        log.debug("{}", id);
         Post post = postService.getPostById(id);
-        log.debug("{}", post);
         model.addAttribute("post", post);
         return "view_post";
     }
@@ -73,15 +71,14 @@ public class PostController {
     @PutMapping("/post/{id}")
     public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
         Post post = postRequest.getPost();
-        log.debug("{}", post);
+//        log.debug("{}", post);
         Post updatedPost = postService.updatePostById(id, post);
-        log.debug("{}", updatedPost);
+//        log.debug("{}", updatedPost);
         return "redirect:/post/" + updatedPost.getId();
     }
 
     @DeleteMapping("/post/{id}")
     public String deletePost(@PathVariable Long id) {
-        log.debug("{}", id);
         postService.deletePost(id);
         return "redirect:/";
     }

@@ -4,10 +4,8 @@ import com.mountblue.blogapplication.model.Comment;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.repository.CommentRepository;
 import com.mountblue.blogapplication.repository.PostRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
@@ -22,12 +20,17 @@ public class CommentService {
         this.postRepository = postRepository;
     }
 
-    public void addComment(Long postId, Comment comment) {
+    public void addComment(Long postId, String name, String email, String commentText) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        comment.setPost(post);
-        post.getComments().add(comment);
-        log.debug("{}", post);
+
+        Comment newComment = new Comment();
+        newComment.setPost(post);
+        newComment.setComment(commentText);
+        newComment.setName(name);
+        newComment.setEmail(email);
+        post.getComments().add(newComment);
+
         postRepository.save(post);
     }
 
@@ -36,27 +39,29 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
     }
 
-    public Comment updateComment(Comment comment) {
-        Comment existingComment = commentRepository.findById(comment.getId())
+    public Comment updateComment(Long commentId, String name, String email, String commentText)  {
+        Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException(
-                        "Comment not found with id: " + comment.getId()
+                        "Comment not found with id: " + commentId
                 ));
 
-        existingComment.setName(comment.getName());
-        existingComment.setEmail(comment.getEmail());
-        existingComment.setComment(comment.getComment());
-
-        if (comment.getPost() != null) {
-            existingComment.setPost(comment.getPost());
-        }
+        existingComment.setName(name);
+        existingComment.setEmail(email);
+        existingComment.setComment(commentText);
 
         return commentRepository.save(existingComment);
     }
 
-    public Comment deleteComment(Long commentId) {
-        return commentRepository.findById(commentId)
+    public String deleteComment(Long commentId) {
+        Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException(
                         "Comment not found with id: " + commentId
                 ));
+
+        Long postId = existingComment.getPost().getId();
+        commentRepository.deleteById(commentId);
+
+        return "redirect:/post/" + postId;
     }
+
 }

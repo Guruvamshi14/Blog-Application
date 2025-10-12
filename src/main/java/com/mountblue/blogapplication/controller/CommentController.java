@@ -10,39 +10,37 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 public class CommentController {
-    private CommentService commentService;
+    private final CommentService commentService;
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
 
-    @PostMapping("/post{postId}/comments")
-    public String addComment(@PathVariable Long postId, @RequestBody Comment comment) {
-//        log.debug("{}", postId);
-//        log.debug("{}", comment);
-        commentService.addComment(postId, comment);
-        return "dumb";
+    @PostMapping("/post/{postId}/comments")
+    public String addComment(@PathVariable Long postId, @RequestParam String name,
+                             @RequestParam String email, @RequestParam String commentText) {
+
+        log.debug("{} {}", name, postId);
+        commentService.addComment(postId, name, email, commentText);
+        return "redirect:/post/" + postId;
     }
 
-    @GetMapping("/update/comment{commentId}")
+    @GetMapping("/comment/{commentId}/edit")
     public String showEditForm(@PathVariable Long commentId, Model model) {
         Comment comment = commentService.getCommentById(commentId);
         model.addAttribute("comment", comment);
-        return "editComment";
+        return "edit_comment";
     }
 
-    @PutMapping("/post/comment{commentId}")
-    public String updateComment(@PathVariable Long commentId,
-                                @RequestBody Comment comment) {
-        comment.setId(commentId);
+    @PutMapping("/comment/{commentId}")
+    public String updateComment(@PathVariable Long commentId, @RequestParam String name,
+                                @RequestParam String email, @RequestParam String commentText) {
 
-        Comment updated = commentService.updateComment(comment);
-        return "redirect:/post" + updated.getPost().getId();
+        Comment updatedComment = commentService.updateComment(commentId, name, email, commentText);
+        return "redirect:/post/" + updatedComment.getPost().getId();
     }
 
-    @DeleteMapping("/post/comment{commentId}")
+    @DeleteMapping("/comment/{commentId}")
     public String deleteComment(@PathVariable Long commentId) {
-        commentService.getCommentById(commentId);
-        return "redirect:/";
+        return commentService.deleteComment(commentId);
     }
-
 }

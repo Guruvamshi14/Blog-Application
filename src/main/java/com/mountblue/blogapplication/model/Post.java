@@ -46,7 +46,7 @@ public class Post {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     private LocalDateTime createdAt;
