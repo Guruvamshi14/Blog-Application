@@ -79,7 +79,6 @@
 
 <!-- ===== Filters & Search Form ===== -->
 <form th:action="@{/}" th:object="${filterDTO}" method="get" class="filters">
-    <!-- Authors -->
     <div class="filter-group">
         <span>Authors:</span>
         <span th:each="author : ${authors}">
@@ -90,7 +89,6 @@
         </span>
     </div>
 
-    <!-- Tags -->
     <div class="filter-group">
         <span>Tags:</span>
         <span th:each="tag : ${tags}">
@@ -128,14 +126,17 @@
     <button type="submit">Filter</button>
 </form>
 
-<!-- ===== Posts List ===== -->
-<div th:each="post : ${posts}" class="post">
+<!-- ===== For Post ===== -->
+<div th:each="post : ${filteredPost.content}" class="post">
     <div>
         <span class="post-title" th:text="${post.title}">Post Title</span> |
         <span class="post-author" th:text="${post.author}">Author</span>
     </div>
 
-    <div class="post-content" th:text="${post.content}">Post content...</div>
+    <div class="post-content">
+        <span th:text="${#strings.length(post.content) > 30} ? ${post.content.substring(0,30)} + '...' : ${post.content}"></span>
+        <a th:if="${#strings.length(post.content) > 30}" th:href="@{'/post/' + ${post.id}}">Read more</a>
+    </div>
 
     <div class="meta">
         <span>Published: </span>
@@ -153,6 +154,35 @@
         </a>
     </div>
 </div>
+
+<!-- ===== Pagination Controls ===== -->
+<div class="pagination">
+    <form th:action="@{/}" th:object="${filterDTO}" method="get">
+        <!-- Preserve filters -->
+        <input type="hidden" th:field="*{authors}"/>
+        <input type="hidden" th:field="*{tags}"/>
+        <input type="hidden" th:field="*{search}"/>
+        <input type="hidden" th:field="*{sortField}"/>
+        <input type="hidden" th:field="*{order}"/>
+        <input type="hidden" th:field="*{startPublishDate}"/>
+        <input type="hidden" th:field="*{endPublishDate}"/>
+
+        <button type="submit"
+                th:disabled="${!filteredPost.hasPrevious()}"
+                th:attr="name='page', value=${filteredPost.number - 1}">
+            Previous
+        </button>
+
+        <span th:text="'Page ' + ${filteredPost.number + 1} + ' of ' + ${filteredPost.totalPages}"></span>
+
+        <button type="submit"
+                th:disabled="${!filteredPost.hasNext()}"
+                th:attr="name='page', value=${filteredPost.number + 1}">
+            Next
+        </button>
+    </form>
+</div>
+
 
 </body>
 </html>

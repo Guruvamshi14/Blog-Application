@@ -13,7 +13,7 @@ public class PostFilterDTO {
     private String sortField = "publishedAt";
     private String order = "desc";
     private int page = 0;
-    private int size = 10;
+    private int size = 3;
 
     private LocalDate startPublishDate;
     private LocalDate endPublishDate;

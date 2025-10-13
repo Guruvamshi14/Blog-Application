@@ -6,6 +6,7 @@ import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
 import com.mountblue.blogapplication.repository.PostRepository;
 import com.mountblue.blogapplication.repository.TagRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,6 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
 
+    @Transactional
     public Post savePost(Post post, List<String> tagList) {
         Set<Tag> tags = new HashSet<>();
         for (String tagName : tagList) {
@@ -42,11 +43,6 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Page<Post> getPaginatedPosts(int pageNo, int pageSize) {
-        PageRequest pageable = PageRequest.of(pageNo, pageSize);
-        return postRepository.findAll(pageable);
-    }
-
     public Post getPostById(Long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
@@ -60,7 +56,6 @@ public class PostService {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
 
-        // This logic is repeating in the Save and in this Method
         Set<Tag> tags = new HashSet<>();
         for (String tagName : tagList) {
             Tag tag = tagRepository.findByName(tagName)
@@ -73,12 +68,11 @@ public class PostService {
         existingPost.setAuthor(updatedPost.getAuthor());
         existingPost.setContent(updatedPost.getContent());
         existingPost.setExcerpt(updatedPost.getExcerpt());
-        existingPost.setPublishedAt(updatedPost.getPublishedAt());
 
         return postRepository.save(existingPost);
     }
 
-    public List<Post> getFilteredPosts(PostFilterDTO filterDTO) {
+    public Page<Post> getFilteredPosts(PostFilterDTO filterDTO) {
         Sort sort = filterDTO.getOrder().equalsIgnoreCase("asc") ?
                 Sort.by(filterDTO.getSortField()).ascending() :
                 Sort.by(filterDTO.getSortField()).descending();
@@ -108,15 +102,15 @@ public class PostService {
                 : null;
 
         return postRepository.findFilteredPosts( authors, tags, tagCount, search,
-                start, end, pageable).getContent();
+                start, end, pageable);
     }
 
     public Set<String> getAllAuthors() {
-        return postRepository.findAllAuthors().stream().collect(Collectors.toSet());
+        return new HashSet<>(postRepository.findAllAuthors());
     }
 
     public Set<Tag> getAllTags() {
-        return postRepository.findAllTags().stream().collect(Collectors.toSet());
+        return new HashSet<>(postRepository.findAllTags());
     }
 
 }

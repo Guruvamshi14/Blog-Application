@@ -15,6 +15,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
+    private static final String ACTION_1 = "Comment not found with id: ";
     public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
@@ -36,14 +37,12 @@ public class CommentService {
 
     public Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException(ACTION_1 + id));
     }
 
     public Comment updateComment(Long commentId, String name, String email, String commentText)  {
         Comment existingComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException(
-                        "Comment not found with id: " + commentId
-                ));
+                .orElseThrow(() -> new RuntimeException(ACTION_1 + commentId));
 
         existingComment.setName(name);
         existingComment.setEmail(email);
@@ -55,7 +54,7 @@ public class CommentService {
     public String deleteComment(Long commentId) {
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException(
-                        "Comment not found with id: " + commentId
+                        ACTION_1 + commentId
                 ));
 
         Long postId = existingComment.getPost().getId();
