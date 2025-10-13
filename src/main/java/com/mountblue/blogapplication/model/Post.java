@@ -4,31 +4,30 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "posts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"comments", "tags"})
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String title;
 
     private String excerpt;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(nullable = false)
@@ -36,7 +35,7 @@ public class Post {
 
     private LocalDateTime publishedAt;
 
-    private Boolean isPublished;
+    private Boolean isPublished = false;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -47,7 +46,7 @@ public class Post {
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     private LocalDateTime createdAt;
 
@@ -80,6 +79,4 @@ public class Post {
         tags.remove(tag);
         tag.getPosts().remove(this);
     }
-
-
 }

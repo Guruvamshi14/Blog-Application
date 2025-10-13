@@ -1,21 +1,20 @@
 package com.mountblue.blogapplication.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
 @Table(name = "tags")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Tag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +28,9 @@ public class Tag {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Tag(String name) {
+        this.name = name;
+    }
 
     @PrePersist
     public void prePersist() {
@@ -39,9 +41,5 @@ public class Tag {
     @PreUpdate
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    public Tag(String name) {
-        this.name = name;
     }
 }

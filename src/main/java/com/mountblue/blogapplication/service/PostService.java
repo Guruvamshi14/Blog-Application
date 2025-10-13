@@ -1,20 +1,24 @@
 package com.mountblue.blogapplication.service;
 
 
+import com.mountblue.blogapplication.dto.PostFilterDTO;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
 import com.mountblue.blogapplication.repository.PostRepository;
 import com.mountblue.blogapplication.repository.TagRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,11 +56,19 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    // We can Merge this into the Save Function for ReUsable of code
-    public Post updatePostById(Long id, Post updatedPost) {
+    public Post updatePostById(Long id, Post updatedPost, List<String> tagList) {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
 
+        // This logic is repeating in the Save and in this Method
+        Set<Tag> tags = new HashSet<>();
+        for (String tagName : tagList) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> new Tag(tagName));
+            tags.add(tag);
+        }
+
+        existingPost.setTags(tags);
         existingPost.setTitle(updatedPost.getTitle());
         existingPost.setAuthor(updatedPost.getAuthor());
         existingPost.setContent(updatedPost.getContent());
@@ -64,6 +76,47 @@ public class PostService {
         existingPost.setPublishedAt(updatedPost.getPublishedAt());
 
         return postRepository.save(existingPost);
+    }
+
+    public List<Post> getFilteredPosts(PostFilterDTO filterDTO) {
+        Sort sort = filterDTO.getOrder().equalsIgnoreCase("asc") ?
+                Sort.by(filterDTO.getSortField()).ascending() :
+                Sort.by(filterDTO.getSortField()).descending();
+
+        Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), sort);
+
+        List<String> authors = (filterDTO.getAuthors() != null && !filterDTO.getAuthors().isEmpty())
+                ? filterDTO.getAuthors()
+                : null;
+
+        List<String> tags = (filterDTO.getTags() != null && !filterDTO.getTags().isEmpty())
+                ? filterDTO.getTags()
+                : null;
+
+        long tagCount = (tags != null) ? tags.size() : 0;
+
+        String search = (filterDTO.getSearch() != null && !filterDTO.getSearch().isEmpty())
+                ? filterDTO.getSearch()
+                : null;
+
+        LocalDateTime start = filterDTO.getStartPublishDate() != null
+                ? filterDTO.getStartPublishDate().atStartOfDay()
+                : null;
+
+        LocalDateTime end = filterDTO.getEndPublishDate() != null
+                ? filterDTO.getEndPublishDate().atTime(23, 59, 59)
+                : null;
+
+        return postRepository.findFilteredPosts( authors, tags, tagCount, search,
+                start, end, pageable).getContent();
+    }
+
+    public Set<String> getAllAuthors() {
+        return postRepository.findAllAuthors().stream().collect(Collectors.toSet());
+    }
+
+    public Set<Tag> getAllTags() {
+        return postRepository.findAllTags().stream().collect(Collectors.toSet());
     }
 
 }

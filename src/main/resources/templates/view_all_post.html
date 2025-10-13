@@ -4,146 +4,155 @@
     <title>All Posts</title>
     <style>
         body {
-            background-color: #fff;
-            color: #000;
             font-family: Arial, sans-serif;
-            margin: 0;
+            margin: 20px;
             padding: 0;
+            color: #000;
+            background-color: #fff;
         }
 
         h1 {
             text-align: center;
-            padding: 20px 0;
+            margin-bottom: 20px;
         }
 
+        /* Filters Section */
+        .filters {
+            border: 1px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+
+        .filter-group {
+            margin-bottom: 10px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        input[type="checkbox"], input[type="text"] {
+            margin-right: 5px;
+        }
+
+        /* Post Card */
         .post {
             border: 1px solid #000;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 15px auto;
-            max-width: 700px;
-            background-color: #fefefe;
-            box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            max-width: 900px;
         }
 
         .post-title {
-            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
-            color: #222;
         }
 
         .post-author {
-            font-size: 16px;
             font-style: italic;
-            color: #555;
-            margin-bottom: 10px;
+            margin-left: 5px;
         }
 
         .post-content {
-            font-size: 14px;
-            color: #333;
+            margin-top: 10px;
             margin-bottom: 10px;
         }
 
         .meta {
             font-size: 0.85em;
-            color: #555;
-            margin-top : 5px;
+            color: #333;
         }
 
-        .label {
-            font-weight: bold;
-            margin-right: 5px;
+        .post-link {
+            margin-top: 10px;
         }
 
-        .pagination {
-            text-align: center;
-            margin: 20px 0;
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
         }
-
-        #custom-content{
-            border: 1px solid black;
-            margin: 2px;
-            padding : 2px;
-        }
-
-        .pagination a {
-            color: #fff;
-            background-color: #000;
-            padding: 6px 12px;
-            margin: 0 5px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .pagination a.disabled {
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        .link-custom {
-        display: flex;
-        justify-content: space-between; /* push items to the ends */
-        align-items: center;           /* vertically center them */
-        padding: 10px 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        background-color: #f9f9f9;
-    }
     </style>
 </head>
 <body>
 
 <h1>All Posts</h1>
 
-<!-- Posts list -->
-<div th:each="post : ${postPage.content}" class="post">
-    <div class="link-custom">
-        <div>
-            <div>
-                <span class="label">Title:</span>
-                <span class="post-title" th:text="${post.title}">Post Title</span>
-            </div>
-            <div>
-                <span class="label">Author:</span>
-                <span class="post-author" th:text="${post.author}">Author Name</span>
-            </div>
-        </div>
+<!-- ===== Filters & Search Form ===== -->
+<form th:action="@{/}" th:object="${filterDTO}" method="get" class="filters">
+    <!-- Authors -->
+    <div class="filter-group">
+        <span>Authors:</span>
+        <span th:each="author : ${authors}">
+            <label>
+                <input type="checkbox" th:field="*{authors}" th:value="${author}"/>
+                <span th:text="${author}"></span>
+            </label>
+        </span>
+    </div>
+
+    <!-- Tags -->
+    <div class="filter-group">
+        <span>Tags:</span>
+        <span th:each="tag : ${tags}">
+            <label>
+                <input type="checkbox" th:field="*{tags}" th:value="${tag.name}"/>
+                <span th:text="${tag.name}"></span>
+            </label>
+        </span>
+    </div>
+
+    <div class="filter-group">
+        <span>Published Between:</span>
+        <input type="date" name="startPublishDate" th:value="${filter?.startPublishDate}"/>
+        <input type="date" name="endPublishDate" th:value="${filter?.endPublishDate}"/>
+    </div>
+
+    <div class="filter-group">
+        <label for="search">Search:</label>
+        <input type="text" id="search" th:field="*{search}" placeholder="Search posts"/>
+    </div>
+
+    <div class="filter-group">
+        <label for="sortField">Sort By:</label>
+        <select id="sortField" th:field="*{sortField}">
+            <option value="publishedAt">Published Date</option>
+            <option value="title">Title</option>
+        </select>
+
+        <select th:field="*{order}">
+            <option value="asc">Asc</option>
+            <option value="desc">Desc</option>
+        </select>
+    </div>
+
+    <button type="submit">Filter</button>
+</form>
+
+<!-- ===== Posts List ===== -->
+<div th:each="post : ${posts}" class="post">
+    <div>
+        <span class="post-title" th:text="${post.title}">Post Title</span> |
+        <span class="post-author" th:text="${post.author}">Author</span>
+    </div>
+
+    <div class="post-content" th:text="${post.content}">Post content...</div>
+
+    <div class="meta">
+        <span>Published: </span>
+        <span th:text="${post.publishedAt != null ? #temporals.format(post.publishedAt,'dd MMM yyyy HH:mm') : 'Wait for update'}"></span>
+        <br/>
+        <span>Created: </span>
+        <span th:text="${#temporals.format(post.createdAt,'dd MMM yyyy HH:mm')}"></span> |
+        <span>Updated: </span>
+        <span th:text="${#temporals.format(post.updatedAt,'dd MMM yyyy HH:mm')}"></span>
+    </div>
+
+    <div class="post-link">
         <a th:href="@{/post/{id}(id=${post.id})}">
             <button>View Post</button>
         </a>
     </div>
-
-
-    <div id = "custom-content">
-        <span class="label">Content:</span>
-        <p class="post-content" th:text="${post.content}">Post content goes here...</p>
-    </div>
-    <div>
-        <span class="label">Published:</span>
-        <span th:text="${post.publishedAt != null} ? ${#temporals.format(post.publishedAt, 'dd MMM yyyy HH:mm')} : 'Wait for the Update'">
-        01 Jan 2025 10:00
-    </span>
-    </div>
-    <div class="meta">
-        <span class="label">Created:</span>
-        <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy HH:mm')}">01 Jan 2025 10:00</span> |
-        <span class="label">Updated:</span>
-        <span th:text="${#temporals.format(post.updatedAt, 'dd MMM yyyy HH:mm')}">02 Jan 2025 12:00</span>
-    </div>
 </div>
-
-<!-- Pagination -->
-<div class="pagination">
-    <a th:if="${currentPage > 0}" th:href="@{/(page=${currentPage - 1})}">Prev</a>
-    <a th:if="${currentPage == 0}" class="disabled">Prev</a>
-
-    <a th:if="${currentPage < totalPages - 1}" th:href="@{/(page=${currentPage + 1})}">Next</a>
-    <a th:if="${currentPage >= totalPages - 1}" class="disabled">Next</a>
-</div>
-
 
 </body>
 </html>

@@ -1,8 +1,10 @@
 package com.mountblue.blogapplication.controller;
 
+import com.mountblue.blogapplication.dto.PostFilterDTO;
 import com.mountblue.blogapplication.dto.PostRequest;
 import com.mountblue.blogapplication.model.Comment;
 import com.mountblue.blogapplication.model.Post;
+import com.mountblue.blogapplication.model.Tag;
 import com.mountblue.blogapplication.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -23,15 +27,27 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public String showAllPost(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Post> posts =  postService.getPaginatedPosts(page, 4);
-        log.debug("{}", posts);
+    public String showAllPost(@ModelAttribute PostFilterDTO filterDTO, Model model) {
 
-        model.addAttribute("postPage", posts);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", posts.getTotalPages());
+        log.debug("{}", filterDTO);
+
+        List<Post> post = postService.getFilteredPosts(filterDTO);
+        List<Post> posts = postService.getAllPosts();
+        Set<String> authors = postService.getAllAuthors();
+        Set<Tag> tags = postService.getAllTags();
+
+        log.debug("Filter Post{}", post);
+        log.debug("posts {}", posts);
+
+//        model.addAttribute("postPage", posts);
+//        model.addAttribute("currentPage", page);
+        model.addAttribute("filterDTO", filterDTO);
+        model.addAttribute("posts", post);
+        model.addAttribute("authors", authors);
+        model.addAttribute("tags", tags);
 
         return "view_all_post";
+//        return "dumb";
     }
 
     @GetMapping("/newpost")
@@ -71,9 +87,9 @@ public class PostController {
     @PutMapping("/post/{id}")
     public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
         Post post = postRequest.getPost();
-//        log.debug("{}", post);
-        Post updatedPost = postService.updatePostById(id, post);
-//        log.debug("{}", updatedPost);
+        List<String> tagList = postRequest.getTagList();
+
+        Post updatedPost = postService.updatePostById(id, post, tagList);
         return "redirect:/post/" + updatedPost.getId();
     }
 
