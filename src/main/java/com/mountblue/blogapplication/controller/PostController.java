@@ -31,7 +31,7 @@ public class PostController {
         Set<String> authors = postService.getAllAuthors();
         Set<Tag> tags = postService.getAllTags();
 
-        log.debug("Filter Post{}", filteredPost);
+        log.debug("filteredPost {}", filteredPost);
 
         model.addAttribute("filterDTO", filterDTO);
         model.addAttribute("filteredPost", filteredPost);
