@@ -4,8 +4,10 @@ package com.mountblue.blogapplication.service;
 import com.mountblue.blogapplication.dto.PostFilterDTO;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
+import com.mountblue.blogapplication.model.User;
 import com.mountblue.blogapplication.repository.PostRepository;
 import com.mountblue.blogapplication.repository.TagRepository;
+import com.mountblue.blogapplication.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import java.util.Set;
 public class PostService {
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public Post savePost(Post post, List<String> tagList) {
@@ -35,6 +38,13 @@ public class PostService {
                     .orElseGet(() -> new Tag(tagName));
             tags.add(tag);
         }
+
+        if (post.getAuthor() != null && post.getAuthor().getId() != null) {
+            User fullAuthor = userRepository.findById(post.getAuthor().getId())
+                    .orElseThrow(() -> new RuntimeException("Author not found"));
+            post.setAuthor(fullAuthor);
+        }
+
         post.setTags(tags);
         return postRepository.save(post);
     }
@@ -79,7 +89,7 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), sort);
 
-        List<String> authors = (filterDTO.getAuthors() != null && !filterDTO.getAuthors().isEmpty())
+        List<User> authors = (filterDTO.getAuthors() != null && !filterDTO.getAuthors().isEmpty())
                 ? filterDTO.getAuthors()
                 : null;
 
@@ -103,10 +113,6 @@ public class PostService {
 
         return postRepository.findFilteredPosts( authors, tags, tagCount, search,
                 start, end, pageable);
-    }
-
-    public Set<String> getAllAuthors() {
-        return new HashSet<>(postRepository.findAllAuthors());
     }
 
     public Set<Tag> getAllTags() {

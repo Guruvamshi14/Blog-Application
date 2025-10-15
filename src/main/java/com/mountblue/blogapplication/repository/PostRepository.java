@@ -2,6 +2,7 @@ package com.mountblue.blogapplication.repository;
 
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
+import com.mountblue.blogapplication.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         HAVING (:tagCount = 0 OR COUNT(DISTINCT t.name) = :tagCount)
     """)
     Page<Post> findFilteredPosts(
-            @Param("authors") List<String> authors,
+            @Param("authors") List<User> authors,
             @Param("tags") List<String> tags,
             @Param("tagCount") long tagCount,
             @Param("search") String search,

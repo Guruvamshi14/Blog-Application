@@ -1,68 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create New Post</title>
-    <style>
-        body {
-            background-color: #f8f8f8;
-            font-family: Arial, sans-serif;
-            color: #333;
-            margin: 40px;
-        }
-<!--        form {-->
-<!--            background: white;-->
-<!--            padding: 20px;-->
-<!--            border-radius: 12px;-->
-<!--            width: 400px;-->
-<!--            box-shadow: 0 2px 8px rgba(0,0,0,0.2);-->
-<!--        }-->
-        label {
-            font-weight: bold;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-top: 6px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-        button {
-            background-color: black;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #333;
-        }
-    </style>
+    <title>Create Post</title>
 </head>
 <body>
-<h1>Create a New Post</h1>
+<h2>Create / Edit Post</h2>
 
-<form th:action="@{/newpost}" th:object="${postRequest}" method="post">
-    <label>Title:</label>
-    <input type="text" th:field="*{title}" required />
+<form th:action="@{/post}" th:object="${postRequest}" method="post">
 
-    <label>Excerpt:</label>
-    <input type="text" th:field="*{excerpt}" required />
+    <!-- Post ID (hidden for updates) -->
+    <input type="hidden" th:field="*{id}" />
 
-    <label>Content:</label>
-    <textarea th:field="*{content}" rows="5" required></textarea>
+    <!-- Title -->
+    <label>Title:</label><br/>
+    <input type="text" th:field="*{title}" placeholder="Title" required /><br/><br/>
 
-    <label>Author:</label>
-    <input type="text" th:field="*{author}" required />
+    <!-- Content -->
+    <label>Content:</label><br/>
+    <textarea th:field="*{content}" placeholder="Content" rows="5" cols="50" required></textarea><br/><br/>
 
-    <label>Tags (comma separated):</label>
-    <input type="text" th:field="*{tags}" placeholder="e.g. Java, Spring, Hibernate" />
+    <!-- Excerpt -->
+    <label>Excerpt:</label><br/>
+    <textarea th:field="*{excerpt}" placeholder="Excerpt" rows="3" cols="50"></textarea><br/><br/>
 
-    <button type="submit">Create Post</button>
+    <!-- Tags -->
+    <label>Tags (comma separated):</label><br/>
+    <input type="text" th:field="*{tags}" placeholder="e.g. Spring, Java, Security" /><br/><br/>
+
+    <!-- Author selection for ADMIN -->
+    <div th:if="${currentUser.role.name() == 'ADMIN'}">
+        <label>Select Author:</label><br/>
+        <select th:field="*{author.id}">
+            <option th:each="aut : ${authors}"
+                    th:value="${aut.id}"
+                    th:text="${aut.name}">
+            </option>
+        </select>
+        <br/><br/>
+    </div>
+
+    <!-- Author fixed for AUTHOR role -->
+    <div th:if="${currentUser.role.name() == 'AUTHOR'}">
+        <input type="hidden" th:field="*{author}" th:value="${currentUser}" />
+    </div>
+
+    <button type="submit">Save Post</button>
 </form>
-
-
-<a href="/" style="color: black; text-decoration: underline;">← Back to Home</a>
 </body>
 </html>

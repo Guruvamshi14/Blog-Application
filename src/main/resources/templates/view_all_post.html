@@ -75,6 +75,20 @@
 </head>
 <body>
 
+<!-- User Actions -->
+<div th:if="${currentUser != null}" style="display: flex; align-items: center; gap: 20px;">
+    <!-- Show current user name -->
+    <span>Logged in as: <b th:text="${currentUser.name}">User Name</b></span>
+
+    <!-- Only show for non-admin users -->
+    <a th:if="${currentUser.role != T(com.mountblue.blogapplication.model.Role).ADMIN}"
+       th:href="@{/posts/my}">View My Posts</a>
+
+
+    <!-- Always show for logged-in users -->
+    <a th:href="@{/post/create}">Create New Post</a>
+</div>
+
 <h1>All Posts</h1>
 
 <!-- ===== Filters & Search Form ===== -->

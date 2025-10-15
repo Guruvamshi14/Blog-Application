@@ -2,6 +2,7 @@ package com.mountblue.blogapplication.dto;
 
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
+import com.mountblue.blogapplication.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class PostRequest {
     private String title;
     private String content;
-    private String author;
+    private User author;
     private String excerpt;
     private String tags;
     private Long id;
@@ -35,6 +36,7 @@ public class PostRequest {
         post.setContent(content);
         post.setAuthor(author);
         post.setExcerpt(excerpt);
+        post.setAuthor(author);
         return post;
     }
 

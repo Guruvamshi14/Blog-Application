@@ -1,5 +1,6 @@
 package com.mountblue.blogapplication.dto;
 
+import com.mountblue.blogapplication.model.User;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -7,7 +8,7 @@ import java.util.List;
 
 @Data
 public class PostFilterDTO {
-    private List<String> authors;
+    private List<User> authors;
     private List<String> tags;
     private String search;
     private String sortField = "publishedAt";
