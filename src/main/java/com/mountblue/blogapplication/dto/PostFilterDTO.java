@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class PostFilterDTO {
-    private List<User> authors;
+    private List<String> authors;
     private List<String> tags;
     private String search;
     private String sortField = "publishedAt";

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(filterDTO.getPage(), filterDTO.getSize(), sort);
 
-        List<User> authors = (filterDTO.getAuthors() != null && !filterDTO.getAuthors().isEmpty())
+        List<String> authors = (filterDTO.getAuthors() != null && !filterDTO.getAuthors().isEmpty())
                 ? filterDTO.getAuthors()
                 : null;
 

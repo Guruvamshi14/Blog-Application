@@ -97,8 +97,8 @@
         <span>Authors:</span>
         <span th:each="author : ${authors}">
             <label>
-                <input type="checkbox" th:field="*{authors}" th:value="${author}"/>
-                <span th:text="${author}"></span>
+                <input type="checkbox" th:field="*{authors}" th:value="${author.name}"/>
+                <span th:text="${author.name}"></span>
             </label>
         </span>
     </div>
@@ -144,7 +144,7 @@
 <div th:each="post : ${filteredPost.content}" class="post">
     <div>
         <span class="post-title" th:text="${post.title}">Post Title</span> |
-        <span class="post-author" th:text="${post.author}">Author</span>
+        <span class="post-author" th:text="${post.author.name}">Author</span>
     </div>
 
     <div class="post-content">

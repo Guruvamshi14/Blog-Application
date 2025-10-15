@@ -17,12 +17,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("""
         SELECT DISTINCT p FROM Post p
         LEFT JOIN p.tags t
-        WHERE (:authors IS NULL OR p.author IN :authors)
+        WHERE (:authors IS NULL OR p.author.name IN :authors)
           AND (:tags IS NULL OR t.name IN :tags)
           AND (:search IS NULL OR :search = '' OR
                LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%')) OR
                LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR
-               LOWER(p.author) LIKE LOWER(CONCAT('%', :search, '%')) OR
+               LOWER(p.author.name) LIKE LOWER(CONCAT('%', :search, '%')) OR
                LOWER(t.name) LIKE LOWER(CONCAT('%', :search, '%')))
           AND p.publishedAt >= COALESCE(:startPublishDate, p.publishedAt)
           AND p.publishedAt <= COALESCE(:endPublishDate, p.publishedAt)
@@ -30,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         HAVING (:tagCount = 0 OR COUNT(DISTINCT t.name) = :tagCount)
     """)
     Page<Post> findFilteredPosts(
-            @Param("authors") List<User> authors,
+            @Param("authors") List<String> authors,
             @Param("tags") List<String> tags,
             @Param("tagCount") long tagCount,
             @Param("search") String search,

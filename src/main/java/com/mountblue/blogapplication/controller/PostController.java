@@ -10,8 +10,6 @@ import com.mountblue.blogapplication.service.PostService;
 import com.mountblue.blogapplication.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +47,8 @@ public class PostController {
         Page<Post> filteredPost = postService.getFilteredPosts(filterDTO);
         List<User> authors = userService.findAuthors();
         Set<Tag> tags = postService.getAllTags();
+
+//        log.debug("Tags are , {}", tags);
 
         log.debug("filteredPost {}", filteredPost);
         model.addAttribute("currentUser", currentUser);
