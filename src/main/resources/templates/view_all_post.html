@@ -80,10 +80,6 @@
     <!-- Show current user name -->
     <span>Logged in as: <b th:text="${currentUser.name}">User Name</b></span>
 
-    <!-- Only show for non-admin users -->
-    <a th:if="${currentUser.role != T(com.mountblue.blogapplication.model.Role).ADMIN}"
-       th:href="@{/posts/my}">View My Posts</a>
-
 
     <!-- Always show for logged-in users -->
     <a th:href="@{/post/create}">Create New Post</a>

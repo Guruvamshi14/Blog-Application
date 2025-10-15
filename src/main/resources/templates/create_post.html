@@ -41,7 +41,9 @@
 
     <!-- Author fixed for AUTHOR role -->
     <div th:if="${currentUser.role.name() == 'AUTHOR'}">
-        <input type="hidden" th:field="*{author}" th:value="${currentUser}" />
+<!--        <input type="hidden" th:field="*{author.id}" th:value="${currentUser.id}" />-->
+        <input type="hidden" name="author.id" th:value="${currentUser.id}" />
+
     </div>
 
     <button type="submit">Save Post</button>

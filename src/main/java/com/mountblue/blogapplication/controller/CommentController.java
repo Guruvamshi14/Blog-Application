@@ -3,6 +3,7 @@ package com.mountblue.blogapplication.controller;
 import com.mountblue.blogapplication.model.Comment;
 import com.mountblue.blogapplication.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class CommentController {
         return "redirect:/post/" + postId;
     }
 
+    @PreAuthorize("@userService.isValidUserForComment(#commentId)")
     @GetMapping("/comment/{commentId}/edit")
     public String showEditForm(@PathVariable Long commentId, Model model) {
         Comment comment = commentService.getCommentById(commentId);
@@ -31,6 +33,7 @@ public class CommentController {
         return "edit_comment";
     }
 
+    @PreAuthorize("@userService.isValidUserForComment(#commentId)")
     @PutMapping("/comment/{commentId}")
     public String updateComment(@PathVariable Long commentId, @RequestParam String name,
                                 @RequestParam String email, @RequestParam String commentText) {
@@ -39,6 +42,7 @@ public class CommentController {
         return "redirect:/post/" + updatedComment.getPost().getId();
     }
 
+    @PreAuthorize("@userService.isValidUserForComment(#commentId)")
     @DeleteMapping("/comment/{commentId}")
     public String deleteComment(@PathVariable Long commentId) {
         return commentService.deleteComment(commentId);

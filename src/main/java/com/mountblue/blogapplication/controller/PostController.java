@@ -10,6 +10,7 @@ import com.mountblue.blogapplication.service.PostService;
 import com.mountblue.blogapplication.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -65,7 +66,7 @@ public class PostController {
             List<User> authors = userService.findAuthors();
             model.addAttribute("authors", authors);
         }
-
+        log.debug("Current User {}", currentUser);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("postRequest", new PostRequest());
         return "create_post";
@@ -91,6 +92,7 @@ public class PostController {
         return "view_post";
     }
 
+    @PreAuthorize("@userService.isValidUserForPost(#id)")
     @GetMapping("/post/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
@@ -99,6 +101,7 @@ public class PostController {
         return "update_post";
     }
 
+    @PreAuthorize("@userService.isValidUserForPost(#id)")
     @PutMapping("/post/{id}")
     public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
         Post post = postRequest.getPost();
@@ -108,6 +111,7 @@ public class PostController {
         return "redirect:/post/" + updatedPost.getId();
     }
 
+    @PreAuthorize("@userService.isValidUserForPost(#id)")
     @DeleteMapping("/post/{id}")
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
