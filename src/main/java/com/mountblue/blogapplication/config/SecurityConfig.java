@@ -4,6 +4,7 @@ import com.mountblue.blogapplication.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -23,8 +24,12 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/register").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/post/create", "/post/edit/**", "/post/delete/**").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers("/post", "/post/edit/**", "/post/delete/**").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/post").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/post/create").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/post/**").hasAnyRole("AUTHOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/post/**").hasAnyRole("AUTHOR", "ADMIN")
+
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
