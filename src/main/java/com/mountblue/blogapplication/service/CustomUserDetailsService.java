@@ -31,3 +31,72 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 }
+
+//
+//
+//                     +----------------------+
+//                             |  User submits login  |
+//        |  form (username +    |
+//        |  password)           |
+//        +----------+-----------+
+//        |
+//v
+//             +------------------+-------------------+
+//                     | UsernamePasswordAuthenticationFilter |
+//        |  (intercepts /login request)         |
+//        +------------------+-------------------+
+//        |
+//v
+//                   +------------+-------------+
+//                           | AuthenticationManager    |
+//        +------------+-------------+
+//        |
+//v
+//                   +------------+-------------+
+//                           | DaoAuthenticationProvider |
+//        |  (default provider)       |
+//        +------------+-------------+
+//        |
+//v
+//           +---------------------------------------+
+//                   | CustomUserDetailsService.loadUserByUsername(username) |
+//        |  (your @Service bean is called)                     |
+//        +---------------------------------------+
+//        |
+//v
+//              +----------------+----------------+
+//                      | Fetch user from database       |
+//        | userRepository.findByName(...) |
+//        +----------------+----------------+
+//        |
+//v
+//             +------------------+------------------+
+//                     | Return UserDetails object           |
+//        | (username, password, roles)        |
+//        +------------------+------------------+
+//        |
+//v
+//             +------------------+------------------+
+//                     | PasswordEncoder.matches(raw, encoded)|
+//        |  (checks password correctness)      |
+//        +------------------+------------------+
+//        |
+//        +-------------+-------------+
+//        |                           |
+//v                           v
+//        +------------------+         +------------------+
+//                | Authentication   |         | Authentication   |
+//        | SUCCESS          |         | FAILURE          |
+//        +------------------+         +------------------+
+//        |                           |
+//v                           v
+//   +--------------------------+       +----------------------+
+//           | SecurityContextHolder    |       | Redirect to /login?error |
+//        |  stores Authentication   |       +----------------------+
+//        +--------------------------+
+//        |
+//v
+//     +----------------------------+
+//             | User can access protected  |
+//        | resources based on roles   |
+//        +----------------------------+

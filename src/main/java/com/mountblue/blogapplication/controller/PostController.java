@@ -48,8 +48,6 @@ public class PostController {
         List<User> authors = userService.findAuthors();
         Set<Tag> tags = postService.getAllTags();
 
-//        log.debug("Tags are , {}", tags);
-
         log.debug("filteredPost {}", filteredPost);
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("filterDTO", filterDTO);
@@ -73,7 +71,6 @@ public class PostController {
         return "create_post";
     }
 
-
     @PostMapping("/post")
     public String savePost(@ModelAttribute PostRequest postRequest) {
         List<String> tagList = postRequest.getTagList();
@@ -93,7 +90,6 @@ public class PostController {
         model.addAttribute("post", post);
         return "view_post";
     }
-
 
     @GetMapping("/post/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
