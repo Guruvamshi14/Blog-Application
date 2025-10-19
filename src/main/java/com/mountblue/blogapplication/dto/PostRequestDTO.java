@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRequest {
+public class PostRequestDTO {
     private String title;
     private String content;
     private User author;
@@ -21,7 +21,7 @@ public class PostRequest {
     private String tags;
     private Long id;
 
-    public PostRequest(Post post) {
+    public PostRequestDTO(Post post) {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.author = post.getAuthor();

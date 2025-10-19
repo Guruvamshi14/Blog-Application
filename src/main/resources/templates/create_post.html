@@ -6,7 +6,7 @@
 <body>
 <h2>Create Post</h2>
 
-<form th:action="@{/post}" th:object="${postRequest}" method="post">
+<form th:action="@{/post}" th:object="${postRequestDTO}" method="post">
 
     <!-- Post ID (hidden for updates) -->
     <input type="hidden" th:field="*{id}" />

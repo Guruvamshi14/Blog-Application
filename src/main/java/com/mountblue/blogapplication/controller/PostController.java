@@ -1,7 +1,7 @@
 package com.mountblue.blogapplication.controller;
 
 import com.mountblue.blogapplication.dto.PostFilterDTO;
-import com.mountblue.blogapplication.dto.PostRequest;
+import com.mountblue.blogapplication.dto.PostRequestDTO;
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
 import com.mountblue.blogapplication.model.User;
@@ -51,18 +51,20 @@ public class PostController {
             List<User> authors = userService.findAuthors();
             model.addAttribute("authors", authors);
         }
+
         log.debug("Current User {}", currentUser);
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("postRequest", new PostRequest());
+        model.addAttribute("postRequest", new PostRequestDTO());
+
         return "create_post";
     }
 
     @PostMapping("/post")
-    public java.lang.String savePost(@ModelAttribute PostRequest postRequest) {
-        List<java.lang.String> tagList = postRequest.getTagList();
-        Post post = postRequest.getPost();
+    public java.lang.String savePost(@ModelAttribute PostRequestDTO postRequestDTO) {
+        List<java.lang.String> tagList = postRequestDTO.getTagList();
+        Post post = postRequestDTO.getPost();
 
-        log.debug("{}", postRequest);
+        log.debug("{}", postRequestDTO);
         log.debug("{}", post);
         log.debug("{}", tagList);
 
@@ -81,24 +83,24 @@ public class PostController {
 
     // We can write this inside the controller
     // we are just calling this function that is present in the userService
-    // - Based on the Comment ID (Parameters present in the url)
+    // Based on the Comment ID (Parameters present in the url)
     @PreAuthorize("@userService.isValidUserForPost(#id)")
     @GetMapping("/post/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
-        PostRequest postRequest = new PostRequest(post);
-        model.addAttribute("postRequest", postRequest);
-        log.debug("{}", postRequest);
+        PostRequestDTO postRequestDTO = new PostRequestDTO(post);
+        model.addAttribute("postRequestDTO", postRequestDTO);
+        log.debug("{}", postRequestDTO);
         return "update_post";
     }
 
     @PreAuthorize("@userService.isValidUserForPost(#id)")
     @PutMapping("/post/{id}")
-    public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
-        log.debug("{} {}", postRequest, id);
+    public String updatePost(@ModelAttribute PostRequestDTO postRequestDTO, @PathVariable("id") Long id) {
+        log.debug("{} {}", postRequestDTO, id);
 
-        Post post = postRequest.getPost();
-        List<java.lang.String> tagList = postRequest.getTagList();
+        Post post = postRequestDTO.getPost();
+        List<java.lang.String> tagList = postRequestDTO.getTagList();
 
         log.debug("{} {}", post, tagList);
 

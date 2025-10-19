@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${postRequest.title}">Edit Post</title>
+    <title th:text="${postRequestDTO.title}">Edit Post</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 30px; color: #000; background: #fff; }
         .container { max-width: 800px; margin: 0 auto; }
@@ -19,8 +19,8 @@
 <div class="container">
     <h1>Edit Post</h1>
 
-    <!-- Form bound to PostRequest -->
-    <form th:action="@{/post/{id}(id=${postRequest.id})}" th:object="${postRequest}" method="post">
+    <!-- Form bound to PostRequestDTO -->
+    <form th:action="@{/post/{id}(id=${postRequestDTO.id})}" th:object="${postRequestDTO}" method="post">
         <!-- Hidden field for PUT method -->
         <input type="hidden" name="_method" value="put" />
 
