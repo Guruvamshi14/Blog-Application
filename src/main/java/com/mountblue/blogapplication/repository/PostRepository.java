@@ -2,7 +2,6 @@ package com.mountblue.blogapplication.repository;
 
 import com.mountblue.blogapplication.model.Post;
 import com.mountblue.blogapplication.model.Tag;
-import com.mountblue.blogapplication.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

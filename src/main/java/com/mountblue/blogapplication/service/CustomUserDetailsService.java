@@ -22,11 +22,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = (User) userRepository.findByName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // We are sending the data in to the inbuilt user
         return new org.springframework.security.core.userdetails.User(
                 user.getName(),
                 user.getPassword(),
                 Collections.singletonList(
-                        new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                        new SimpleGrantedAuthority("ROLE_" + user.getRole())
                 )
         );
     }
@@ -65,7 +66,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 //        |
 //v
 //              +----------------+----------------+
-//                      | Fetch user from database       |
+//                      | Fetch user convertTagDTO database       |
 //        | userRepository.findByName(...) |
 //        +----------------+----------------+
 //        |

@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +71,12 @@ public class PostService {
             Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() -> new Tag(tagName));
             tags.add(tag);
+        }
+
+        if (existingPost.getAuthor() != null && existingPost.getAuthor().getId() != null) {
+            User fullAuthor = userRepository.findById(existingPost.getAuthor().getId())
+                    .orElseThrow(() -> new RuntimeException("Author not found"));
+            existingPost.setAuthor(fullAuthor);
         }
 
         existingPost.setTags(tags);

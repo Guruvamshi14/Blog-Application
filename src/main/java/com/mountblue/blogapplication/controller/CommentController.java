@@ -17,11 +17,10 @@ public class CommentController {
     }
 
     @PostMapping("/post/{postId}/comments")
-    public String addComment(@PathVariable Long postId, @RequestParam String name,
+    public String saveComment(@PathVariable Long postId, @RequestParam String name,
                              @RequestParam String email, @RequestParam String commentText) {
-
         log.debug("{} {}", name, postId);
-        commentService.addComment(postId, name, email, commentText);
+        commentService.saveComment(postId, name, email, commentText);
         return "redirect:/post/" + postId;
     }
 
@@ -37,7 +36,6 @@ public class CommentController {
     @PutMapping("/comment/{commentId}")
     public String updateComment(@PathVariable Long commentId, @RequestParam String name,
                                 @RequestParam String email, @RequestParam String commentText) {
-
         Comment updatedComment = commentService.updateComment(commentId, name, email, commentText);
         return "redirect:/post/" + updatedComment.getPost().getId();
     }
@@ -48,3 +46,5 @@ public class CommentController {
         return commentService.deleteComment(commentId);
     }
 }
+
+

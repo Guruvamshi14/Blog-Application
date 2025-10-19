@@ -4,7 +4,7 @@
     <title>Create Post</title>
 </head>
 <body>
-<h2>Create / Edit Post</h2>
+<h2>Create Post</h2>
 
 <form th:action="@{/post}" th:object="${postRequest}" method="post">
 
@@ -28,7 +28,7 @@
     <input type="text" th:field="*{tags}" placeholder="e.g. Spring, Java, Security" /><br/><br/>
 
     <!-- Author selection for ADMIN -->
-    <div th:if="${currentUser.role.name() == 'ADMIN'}">
+    <div th:if="${currentUser.getRole() == 'ADMIN'}">
         <label>Select Author:</label><br/>
         <select th:field="*{author.id}">
             <option th:each="aut : ${authors}"
@@ -39,9 +39,8 @@
         <br/><br/>
     </div>
 
-    <!-- Author fixed for AUTHOR role -->
-    <div th:if="${currentUser.role.name() == 'AUTHOR'}">
-<!--        <input type="hidden" th:field="*{author.id}" th:value="${currentUser.id}" />-->
+    <!-- Author fixed for AUTHOR string -->
+    <div th:if="${currentUser.getRole() == 'AUTHOR'}">
         <input type="hidden" name="author.id" th:value="${currentUser.id}" />
 
     </div>

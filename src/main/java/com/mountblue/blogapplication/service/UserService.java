@@ -1,17 +1,18 @@
 package com.mountblue.blogapplication.service;
 
 import com.mountblue.blogapplication.model.Comment;
-import com.mountblue.blogapplication.model.Role;
 import com.mountblue.blogapplication.model.User;
 import com.mountblue.blogapplication.repository.CommentRepository;
 import com.mountblue.blogapplication.repository.PostRepository;
 import com.mountblue.blogapplication.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -24,11 +25,23 @@ public class UserService {
         this.commentRepository = commentRepository;
     }
 
+    public User saveUser(User user) {
+        if (userRepository.findByName(user.getName()).isPresent()) {
+            throw new RuntimeException("Username already taken");  // we can create custom Exception
+        }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+        user.setPassword(user.getPassword());
+        return userRepository.save(user);
+    }
+
     public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            String username = auth.getName(); // username used to login
+            String username = auth.getName();
+            log.debug("{}", auth);
             return (User) userRepository.findByName(username).orElse(null);
         }
         return null;
@@ -39,7 +52,7 @@ public class UserService {
     }
 
     public List<User> findAuthors() {
-        return userRepository.findByRole(Role.AUTHOR);
+        return userRepository.findByRole("AUTHOR");
     }
 
     public boolean isValidUserForPost(Long postId) {
@@ -58,11 +71,11 @@ public class UserService {
         if (currentUser == null) {
             return false;
         }
-        return currentUser.getRole() == Role.ADMIN;
+        return currentUser.getRole().equals("ADMIN");
     }
 
     public boolean isValidUserForComment(Long commentId) {
-        User currentUser = getCurrentUser(); // your existing method
+        User currentUser = getCurrentUser();
         if (currentUser == null) return false;
 
         Comment comment = commentRepository.findById(commentId)

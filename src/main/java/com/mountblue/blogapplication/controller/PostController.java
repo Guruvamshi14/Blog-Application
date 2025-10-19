@@ -3,7 +3,6 @@ package com.mountblue.blogapplication.controller;
 import com.mountblue.blogapplication.dto.PostFilterDTO;
 import com.mountblue.blogapplication.dto.PostRequest;
 import com.mountblue.blogapplication.model.Post;
-import com.mountblue.blogapplication.model.Role;
 import com.mountblue.blogapplication.model.Tag;
 import com.mountblue.blogapplication.model.User;
 import com.mountblue.blogapplication.service.PostService;
@@ -18,20 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-//import com.mountblue.blogapplication.dto.PostFilterDTO;
-//import com.mountblue.blogapplication.dto.PostRequest;
-//import com.mountblue.blogapplication.model.Post;
-//import com.mountblue.blogapplication.model.Tag;
-//import com.mountblue.blogapplication.service.PostService;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.data.domain.Page;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.ui.Model;
-//
-//import java.util.List;
-//import java.util.Set;
-//
 @Slf4j
 @Controller
 public class PostController {
@@ -43,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public String showAllPost(@ModelAttribute PostFilterDTO filterDTO, Model model) {
+    public java.lang.String showAllPost(@ModelAttribute PostFilterDTO filterDTO, Model model) {
         User currentUser = userService.getCurrentUser();
         Page<Post> filteredPost = postService.getFilteredPosts(filterDTO);
         List<User> authors = userService.findAuthors();
@@ -60,9 +45,9 @@ public class PostController {
     }
 
     @GetMapping("/post/create")
-    public String createPostForm(Model model) {
+    public java.lang.String createPostForm(Model model) {
         User currentUser = userService.getCurrentUser();
-        if (currentUser.getRole() == Role.ADMIN) {
+        if (currentUser != null && currentUser.getRole().equals("ADMIN")) {
             List<User> authors = userService.findAuthors();
             model.addAttribute("authors", authors);
         }
@@ -73,8 +58,8 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public String savePost(@ModelAttribute PostRequest postRequest) {
-        List<String> tagList = postRequest.getTagList();
+    public java.lang.String savePost(@ModelAttribute PostRequest postRequest) {
+        List<java.lang.String> tagList = postRequest.getTagList();
         Post post = postRequest.getPost();
 
         log.debug("{}", postRequest);
@@ -88,26 +73,37 @@ public class PostController {
     @GetMapping("/post/{id}")
     public String getPostById(@PathVariable("id") Long id, Model model) {
         Post post = postService.getPostById(id);
+        log.debug("post Data{}", post);
         model.addAttribute("post", post);
+        log.debug("{}", post);
         return "view_post";
     }
 
+    // We can write this inside the controller
+    // we are just calling this function that is present in the userService
+    // - Based on the Comment ID (Parameters present in the url)
     @PreAuthorize("@userService.isValidUserForPost(#id)")
     @GetMapping("/post/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Post post = postService.getPostById(id);
         PostRequest postRequest = new PostRequest(post);
         model.addAttribute("postRequest", postRequest);
+        log.debug("{}", postRequest);
         return "update_post";
     }
 
     @PreAuthorize("@userService.isValidUserForPost(#id)")
     @PutMapping("/post/{id}")
     public String updatePost(@ModelAttribute PostRequest postRequest, @PathVariable("id") Long id) {
+        log.debug("{} {}", postRequest, id);
+
         Post post = postRequest.getPost();
-        List<String> tagList = postRequest.getTagList();
+        List<java.lang.String> tagList = postRequest.getTagList();
+
+        log.debug("{} {}", post, tagList);
 
         Post updatedPost = postService.updatePostById(id, post, tagList);
+
         return "redirect:/post/" + updatedPost.getId();
     }
 
@@ -117,5 +113,6 @@ public class PostController {
         postService.deletePost(id);
         return "redirect:/";
     }
+
 }
 

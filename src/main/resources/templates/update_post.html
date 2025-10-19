@@ -44,6 +44,8 @@
             <input type="text" id="tags" th:field="*{tags}" placeholder="e.g. Java, Spring, Hibernate" />
         </div>
 
+        <input type="hidden" th:field="*{author.id}" />
+
         <button type="submit">Save Post</button>
     </form>
 

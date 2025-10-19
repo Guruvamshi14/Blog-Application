@@ -21,7 +21,7 @@ public class CommentService {
         this.postRepository = postRepository;
     }
 
-    public void addComment(Long postId, String name, String email, String commentText) {
+    public Comment saveComment(Long postId, String name, String email, String commentText) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -30,9 +30,7 @@ public class CommentService {
         newComment.setComment(commentText);
         newComment.setName(name);
         newComment.setEmail(email);
-        post.getComments().add(newComment);
-
-        postRepository.save(post);
+        return commentRepository.save(newComment);
     }
 
     public Comment getCommentById(Long commentId) {

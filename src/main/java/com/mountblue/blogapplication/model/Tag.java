@@ -1,5 +1,6 @@
 package com.mountblue.blogapplication.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 

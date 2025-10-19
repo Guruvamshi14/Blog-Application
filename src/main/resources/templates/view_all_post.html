@@ -76,14 +76,29 @@
 <body>
 
 <!-- User Actions -->
-<div th:if="${currentUser != null}" style="display: flex; align-items: center; gap: 20px;">
-    <!-- Show current user name -->
-    <span>Logged in as: <b th:text="${currentUser.name}">User Name</b></span>
+<!-- ===== User Actions ===== -->
+<div style="display: flex; align-items: center; justify-content: space-between; max-width: 900px; margin-bottom: 20px;">
+    <div>
+        <span th:if="${currentUser != null}">
+            Logged in as: <b th:text="${currentUser.name}">User Name</b>
+            |
+            <a th:href="@{/post/create}">Create New Post</a>
+        </span>
 
+        <!-- If user not logged in -->
+        <span th:if="${currentUser == null}">
+            <a th:href="@{/login}">Login</a>
+        </span>
+    </div>
 
-    <!-- Always show for logged-in users -->
-    <a th:href="@{/post/create}">Create New Post</a>
+    <!-- Logout button only for logged-in users -->
+    <div th:if="${currentUser != null}">
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 </div>
+
 
 <h1>All Posts</h1>
 

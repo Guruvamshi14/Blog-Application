@@ -28,15 +28,17 @@ public class PostRequest {
         this.excerpt = post.getExcerpt();
         this.tags = convertTagsToString(post.getTags());
         this.id = post.getId();
+        this.author = post.getAuthor();
     }
 
-    public  Post getPost() {
+    public Post getPost() {
         Post post = new Post();
         post.setTitle(title);
         post.setContent(content);
         post.setAuthor(author);
         post.setExcerpt(excerpt);
         post.setAuthor(author);
+        post.setId(id);
         return post;
     }
 
@@ -60,6 +62,4 @@ public class PostRequest {
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(", "));
     }
-
-
 }
