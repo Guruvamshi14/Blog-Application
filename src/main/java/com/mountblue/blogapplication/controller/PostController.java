@@ -45,7 +45,7 @@ public class PostController {
     }
 
     @GetMapping("/post/create")
-    public java.lang.String createPostForm(Model model) {
+    public String createPostForm(Model model) {
         User currentUser = userService.getCurrentUser();
         if (currentUser != null && currentUser.getRole().equals("ADMIN")) {
             List<User> authors = userService.findAuthors();
@@ -54,13 +54,13 @@ public class PostController {
 
         log.debug("Current User {}", currentUser);
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("postRequest", new PostRequestDTO());
+        model.addAttribute("postRequestDTO", new PostRequestDTO());
 
         return "create_post";
     }
 
     @PostMapping("/post")
-    public java.lang.String savePost(@ModelAttribute PostRequestDTO postRequestDTO) {
+    public String savePost(@ModelAttribute PostRequestDTO postRequestDTO) {
         List<java.lang.String> tagList = postRequestDTO.getTagList();
         Post post = postRequestDTO.getPost();
 
